@@ -1,6 +1,7 @@
 package fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -71,12 +73,12 @@ public class BTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_b, container, false);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         gv = (GridView) rootView.findViewById(R.id.gridView);
 
 
-        gv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            public void onItemClick(AdapterView parent, View v, int position, long id){
+        gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
                 GalleryEntry ge = (GalleryEntry) parent.getItemAtPosition(position);
                 Intent newIntent = new Intent(getActivity(), PhotoDisplayActivity.class);
                 newIntent.putExtra("id", ge.id);
@@ -84,6 +86,28 @@ public class BTabFragment extends Fragment {
 
             }
         });
+
+        gv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("CS496Test", "Long Click!!!");
+                final AdapterView<?> p = parent;
+                final int pos = position;
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setMessage("Do you want to remove the picture?").setTitle("Are you sure?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String id = ((GalleryEntry)p.getItemAtPosition(pos)).id;
+                        new DeleteAsyncTask().execute(id);
+                    }
+                }).setNegativeButton("Cancel", null).create().show();
+
+                return true;
+            }
+        });
+
 
 
 
@@ -105,6 +129,42 @@ public class BTabFragment extends Fragment {
     public void addData(Uri photoURI){
         Log.d("CS496Test", "addData");
         new UploadAsyncTask().execute(photoURI);
+    }
+
+    private class DeleteAsyncTask extends AsyncTask<String, Void, Void>{
+
+        String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/pics";
+
+        @Override
+        protected Void doInBackground(String... ids){
+            HttpURLConnection conn = null;
+            String id = ids[0];
+            try {
+                URL url = new URL(server_url + "/" + id);
+                conn = (HttpURLConnection) url.openConnection();
+                //conn.setRequestProperty("Content-Type",  "application/json");
+
+                //Log.d("Props", conn.getHeaderField("Content-Type"));
+                conn.setRequestMethod("DELETE");
+                conn.getResponseCode();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                conn.disconnect();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Void voids){
+            super.onPostExecute(null);
+            new PopulateAsyncTask().execute();
+        }
+
     }
 
     private class UploadAsyncTask extends AsyncTask<Uri, Void, String> {
