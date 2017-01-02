@@ -1,5 +1,6 @@
 package com.cs496.proj2.project2;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,13 +42,28 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    public static final int REQUEST_IMAGE_SEARCH = 1;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        Log.d("CS496Test", "onActivityResult");
+        if(requestCode == REQUEST_IMAGE_SEARCH && resultCode == RESULT_OK){
+            Log.d("CS496Test", "addData");
+            Fragment f = mSectionsPagerAdapter.fragments[1];
+            if(f != null){
+
+                ((BTabFragment) f).addData(data.getData());
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -58,14 +75,14 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
     }
 
@@ -98,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
+        Fragment[] fragments = new Fragment[3];
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -108,11 +125,11 @@ public class MainActivity extends AppCompatActivity {
 
             switch(position){
                 case 0:
-                    return ATabFragment.newInstance();
+                    return fragments[0] = ATabFragment.newInstance();
                 case 1:
-                    return BTabFragment.newInstance();
+                    return fragments[1] = BTabFragment.newInstance();
                 case 2:
-                    return CTabFragment.newInstance();
+                    return fragments[2] = CTabFragment.newInstance();
             }
             return null;
         }
