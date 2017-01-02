@@ -42,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    public static final int REQUEST_IMAGE_SEARCH = 1;
+    public static final int REQUEST_IMAGE_SEARCH = 8;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         Log.d("CS496Test", "onActivityResult");
+        Log.d("CS496Test", resultCode + " " + requestCode);
         if(requestCode == REQUEST_IMAGE_SEARCH && resultCode == RESULT_OK){
             Log.d("CS496Test", "addData");
             Fragment f = mSectionsPagerAdapter.fragments[1];
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -103,6 +105,13 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if((mViewPager.getCurrentItem() == 1)){
+                Intent newIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                newIntent.setType("image/*");
+                if (newIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(newIntent, MainActivity.REQUEST_IMAGE_SEARCH);
+                }
+            }
             return true;
         }
 

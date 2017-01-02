@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,7 +70,8 @@ public class BTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_b, container, false);
-
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         gv = (GridView) rootView.findViewById(R.id.gridView);
 
 
@@ -82,17 +85,19 @@ public class BTabFragment extends Fragment {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.addButton);
+
+
+        /*FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.addButton);
 
         fab.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent newIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 newIntent.setType("image/*");
                 if (newIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(newIntent, MainActivity.REQUEST_IMAGE_SEARCH);
+                    getActivity().startActivityForResult(newIntent, MainActivity.REQUEST_IMAGE_SEARCH);
                 }
             }
-        });
+        });*/
 
         return rootView;
     }
