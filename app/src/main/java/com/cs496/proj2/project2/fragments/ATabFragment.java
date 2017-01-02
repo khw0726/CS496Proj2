@@ -1,11 +1,10 @@
-package fragments;
+package com.cs496.proj2.project2.fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.cs496.proj2.project2.R;
 
@@ -16,9 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.AccessToken;
@@ -27,17 +23,11 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.HttpMethod;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequest.GraphJSONObjectCallback;
 import com.facebook.GraphResponse;
-
-
-import android.database.Cursor;
-import android.widget.Toast;
 
 
 /**

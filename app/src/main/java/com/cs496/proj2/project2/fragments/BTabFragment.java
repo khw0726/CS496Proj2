@@ -1,4 +1,4 @@
-package fragments;
+package com.cs496.proj2.project2.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -25,7 +23,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.cs496.proj2.project2.GalleryEntry;
-import com.cs496.proj2.project2.MainActivity;
 import com.cs496.proj2.project2.PhotoDisplayActivity;
 import com.cs496.proj2.project2.R;
 
@@ -33,14 +30,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import android.net.Uri;

@@ -2,10 +2,7 @@ package com.cs496.proj2.project2;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,24 +10,19 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.TextView;
-
-import fragments.ATabFragment;
-import fragments.BTabFragment;
-import fragments.CTabFragment;
+import com.cs496.proj2.project2.fragments.ATabFragment;
+import com.cs496.proj2.project2.fragments.BTabFragment;
+import com.cs496.proj2.project2.fragments.CTabFragment;
 
 
 public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
+     * com.cs496.proj2.project2.fragments for each of the sections. We use a
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
@@ -114,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
                 if (newIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(newIntent, MainActivity.REQUEST_IMAGE_SEARCH);
                 }
+            } else if(mViewPager.getCurrentItem() == 2){
+                Intent newIntent = new Intent(getApplicationContext(), AddJoongoActivity.class);
+                startActivity(newIntent);
             }
             return true;
         }

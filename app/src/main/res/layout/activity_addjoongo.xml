@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:paddingTop="20dp"
+                android:id="@+id/pic_addJoongo"
+                android:layout_centerHorizontal="true"
+                android:onClick="onClick"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+
+                />
+            <ImageButton
+                android:layout_width="60dp"
+                android:onClick="onClick"
+                android:id="@+id/newPic_addjoongo"
+                android:layout_gravity="bottom"
+                android:scaleType="fitCenter"
+                android:layout_alignBottom="@id/pic_addJoongo"
+                android:layout_toRightOf="@id/pic_addJoongo"
+                android:background="@android:drawable/ic_menu_camera"
+                android:layout_height="60dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:id="@+id/options_addJoongo"
+                android:layout_below="@id/pic_addJoongo">
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Negotiable"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:id="@+id/negotiable_addJoongo"/>
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Deliverable"
+                    android:layout_weight="1"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:id="@+id/TBable_addJoongo"/>
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/namePrice_addJoongo"
+                android:layout_below="@id/options_addJoongo">
+
+                <EditText
+                    android:id="@+id/name_addJoongo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="40dp"
+                    android:hint="Name"
+
+                    />
+                <EditText
+                    android:id="@+id/price_addJoongo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="40dp"
+                    android:hint="Price"
+                    android:inputType="number"
+                    />
+
+            </LinearLayout>
+
+
+            <EditText
+                android:id="@+id/desc_addJoongo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/namePrice_addJoongo"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:hint="Description"
+                 />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/desc_addJoongo">
+
+                <Button
+                    android:id="@+id/addCommitButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="10dp"
+                    android:onClick="onClick"
+                    android:text="OK" />
+
+                <Button
+                    android:id="@+id/addEditButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:onClick="onClick"
+                    android:text="Edit" />
+                <Button
+                    android:id="@+id/addCancelButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:onClick="onClick"
+                    android:text="Cancel" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>
