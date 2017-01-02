@@ -25,6 +25,7 @@ import fragments.ATabFragment;
 import fragments.BTabFragment;
 import fragments.CTabFragment;
 
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -56,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
                 ((BTabFragment) f).addData(data.getData());
             }
         }
+        ((ATabFragment)mSectionsPagerAdapter.fragments[0]).callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
