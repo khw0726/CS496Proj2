@@ -152,6 +152,7 @@ public class AddJoongoActivity extends Activity {
         {
             //mCommentView.setVisibility(View.GONE);
             mCommentAdd.setVisibility(View.GONE);
+            findViewById(R.id.line_addJoongo).setVisibility(View.GONE);
         }
 
     }

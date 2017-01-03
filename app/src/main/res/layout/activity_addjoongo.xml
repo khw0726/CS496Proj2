@@ -116,6 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
                 android:background="@color/colorAccent"
+                android:id="@+id/line_addJoongo"
                 android:layout_margin="10dp" />
 
 
