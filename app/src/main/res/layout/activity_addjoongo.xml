@@ -112,15 +112,24 @@
                 android:layout_marginTop="10dp"
                 android:hint="Description"
                  />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/colorAccent"
+                android:layout_margin="10dp" />
+
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="140dp"
+                android:textSize="20dp"
                 android:id="@+id/commentView_addJoongo"
-                />
+                android:padding="10dp"
+                android:drawableLeft="@drawable/arrow"
+                android:layout_marginLeft="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="92dp"
+                android:layout_height="56dp"
                 android:id="@+id/addCommentLayout_addJoongo"
 
                 android:layout_marginLeft="20dp"

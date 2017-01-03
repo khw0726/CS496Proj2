@@ -97,7 +97,7 @@ public class AddJoongoActivity extends Activity {
                     comments = new JSONArray(gotBundle.getString("comments"));
                     for(int i =0; i<comments.length(); i++){
                         JSONObject j = comments.getJSONObject(i);
-                        commentsStr += j.getString("author") + ": " + j.getString("content");
+                        commentsStr += j.getString("author") + ": " + j.getString("content")+"\n";
                     }
                     mCommentView.setText(commentsStr);
                 } catch (JSONException e) {
