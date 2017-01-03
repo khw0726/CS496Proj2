@@ -27,7 +27,7 @@
             <ImageButton
                 android:layout_width="60dp"
                 android:onClick="onClick"
-                android:id="@+id/newPic_addjoongo"
+                android:id="@+id/newPic_addJoongo"
                 android:layout_gravity="bottom"
                 android:scaleType="fitCenter"
                 android:layout_alignBottom="@id/pic_addJoongo"

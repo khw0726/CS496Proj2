@@ -31,10 +31,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:id="@+id/joongoName"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:id="@+id/joongoPrice"/>
             </LinearLayout>
             <LinearLayout
@@ -44,11 +46,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/joongoNegotiable"
+                    android:layout_weight="1"
                     android:text="Negotiable"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/joongoTBable"
+                    android:layout_weight="1"
                     android:text="Delivery"/>
             </LinearLayout>
             <TextView

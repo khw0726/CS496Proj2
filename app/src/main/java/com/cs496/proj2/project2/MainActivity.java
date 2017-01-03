@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     public static final int REQUEST_IMAGE_SEARCH = 8;
+    public static final int ADD_NEW_JOONGO = 6;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -47,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
             if(f != null){
 
                 ((BTabFragment) f).addData(data.getData());
+            }
+        } else if(requestCode == ADD_NEW_JOONGO && resultCode == RESULT_OK){
+            Log.d("CS496Test", "addData");
+            Fragment f = mSectionsPagerAdapter.fragments[2];
+            if(f != null){
+                ((CTabFragment) f).addData(data.getBundleExtra("data"));
             }
         }
         ((ATabFragment)mSectionsPagerAdapter.fragments[0]).callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -108,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if(mViewPager.getCurrentItem() == 2){
                 Intent newIntent = new Intent(getApplicationContext(), AddJoongoActivity.class);
-                startActivity(newIntent);
+                startActivityForResult(newIntent, ADD_NEW_JOONGO);
             }
             return true;
         }
