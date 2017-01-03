@@ -8,9 +8,9 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:srcCompat="@color/colorAccent"
         android:id="@+id/imageView"
-        android:foregroundGravity="center_vertical"/>
+        android:scaleType="fitCenter"/>
 
 </LinearLayout>

@@ -144,7 +144,7 @@ public class AddJoongoActivity extends Activity {
             mButtons.setVisibility(View.GONE);
             mCameraButton.setEnabled(false);
             mDescEt.setEnabled(false);
-            new DownloadAsyncTask().execute(id);
+            //new DownloadAsyncTask().execute(id);
             mTBButton.setEnabled(false);
             mNegoButton.setEnabled(false);
 
