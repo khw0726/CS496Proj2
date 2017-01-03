@@ -118,14 +118,22 @@
                 android:background="@color/colorAccent"
                 android:layout_margin="10dp" />
 
-            <TextView
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+
                 android:textSize="20dp"
-                android:id="@+id/commentView_addJoongo"
+
                 android:padding="10dp"
                 android:drawableLeft="@drawable/arrow"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/commentsLayout_addJoongo"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -159,6 +167,17 @@
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/addFinalizeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="End Deal" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="49dp"
@@ -176,16 +195,7 @@
                     android:onClick="onClick"
                     android:text="OK" />
 
-                <Button
-                    android:id="@+id/addEditButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:onClick="onClick"
-                    android:text="Edit" />
+
                 <Button
                     android:id="@+id/addCancelButton"
                     android:layout_width="wrap_content"

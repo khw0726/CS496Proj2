@@ -64,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
                     ((CTabFragment) f).addComment(data.getStringExtra("id"), data.getStringExtra("comment"));
                 }
+            } else {//if(resultCode == RESULT_FIRST_USER){
+                Fragment f = mSectionsPagerAdapter.fragments[2];
+                if (f != null) {
+
+                    ((CTabFragment) f).finishDeal(data.getStringExtra("id"));
+                }
             }
 
         }

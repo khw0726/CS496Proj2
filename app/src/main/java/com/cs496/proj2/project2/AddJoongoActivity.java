@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +44,7 @@ public class AddJoongoActivity extends Activity {
     private ImageButton mCameraButton;
     private Button mAddCommitButton;
     private Button mCancelButton;
-    private Button mEditButton;
+    private Button mFinalizeButton;
     private ToggleButton mNegoButton;
     private ToggleButton mTBButton;
     private EditText mDescEt;
@@ -52,7 +53,7 @@ public class AddJoongoActivity extends Activity {
     private EditText mCommentAuthorEdit;
     private EditText mCommentEdit;
     private String id;
-
+    private String deviceID;
     String mCurrentPhotoPath = null;
 
 
@@ -69,18 +70,20 @@ public class AddJoongoActivity extends Activity {
         mCameraButton = (ImageButton) findViewById(R.id.newPic_addJoongo);
         mCancelButton = (Button) findViewById(R.id.addCancelButton);
         mAddCommitButton = (Button) findViewById(R.id.addCommitButton);
-        mEditButton = (Button) findViewById(R.id.addEditButton);
+        mFinalizeButton = (Button) findViewById(R.id.addFinalizeButton);
         mNegoButton = (ToggleButton) findViewById(R.id.negotiable_addJoongo);
         mTBButton = (ToggleButton) findViewById(R.id.TBable_addJoongo);
         mDescEt = (EditText) findViewById(R.id.desc_addJoongo);
         mPicture = (ImageView) findViewById(R.id.pic_addJoongo);
-        mCommentView = (TextView) findViewById(R.id.commentView_addJoongo);
+        //mCommentView = (TextView) findViewById(R.id.commentView_addJoongo);
         mCommentAuthorEdit = (EditText)findViewById(R.id.commentAuthor_addJoongo);
         mCommentEdit = (EditText)findViewById(R.id.comment_addJoongo);
+
         JSONArray comments;
         String commentsStr = "";
         LinearLayout mButtons = (LinearLayout) findViewById(R.id.buttonsLayout_addJoongo);
         LinearLayout mCommentAdd = (LinearLayout) findViewById(R.id.addCommentLayout_addJoongo);
+        LinearLayout mCommentsLayout = (LinearLayout) findViewById(R.id.commentsLayout_addJoongo);
         Intent gotIntent = getIntent();
         if (gotIntent != null) {
             Bundle gotBundle = gotIntent.getBundleExtra("data");
@@ -92,14 +95,22 @@ public class AddJoongoActivity extends Activity {
                 mDescEt.setText(gotBundle.getString("desc"));
                 //mPhotoURI = Uri.parse(gotBundle.getString("image"));
                 id = gotBundle.getString("id");
+                deviceID = gotBundle.getString("deviceID");
                 isComment = gotBundle.getBoolean("isComment");
                 try {
                     comments = new JSONArray(gotBundle.getString("comments"));
                     for(int i =0; i<comments.length(); i++){
                         JSONObject j = comments.getJSONObject(i);
-                        commentsStr += j.getString("author") + ": " + j.getString("content")+"\n";
+                        commentsStr = j.getString("author") + ": " + j.getString("content");
+                        LinearLayout l = new LinearLayout(getApplicationContext());
+                        TextView textView = new TextView(getApplicationContext());
+                        textView.setText(commentsStr);
+                        textView.setTextColor(getResources().getColor(R.color.colorFont));
+                        textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow, 0, 0, 0);
+                        l.addView(textView);
+                        mCommentsLayout.addView(l);
                     }
-                    mCommentView.setText(commentsStr);
+                    //mCommentView.setText(commentsStr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -109,8 +120,13 @@ public class AddJoongoActivity extends Activity {
 
             }
         }
-        mEditButton.setEnabled(false);
-        mEditButton.setVisibility(View.GONE);
+        mFinalizeButton.setEnabled(false);
+        mFinalizeButton.setVisibility(View.GONE);
+        if(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals(deviceID)){
+            mFinalizeButton.setEnabled(true);
+            mFinalizeButton.setVisibility(View.VISIBLE);
+        }
+
         if(isComment){
             mNameEt.setEnabled(false);
             mPriceEt.setEnabled(false);
@@ -121,7 +137,7 @@ public class AddJoongoActivity extends Activity {
 
         } else
         {
-            mCommentView.setVisibility(View.GONE);
+            //mCommentView.setVisibility(View.GONE);
             mCommentAdd.setVisibility(View.GONE);
         }
 
@@ -172,6 +188,7 @@ public class AddJoongoActivity extends Activity {
                 bundle.putBoolean("negotiable", mNegoButton.isChecked());
                 bundle.putBoolean("delivery", mTBButton.isChecked());
                 bundle.putString("desc", mDescEt.getText().toString());
+                //bundle.putString("deviceID", Settings.Secure.ANDROID_ID);
                 if(mPhotoURI == null){
                     bundle.putString("image", "");
                 } else {
@@ -241,18 +258,16 @@ public class AddJoongoActivity extends Activity {
                 finish();
                 break;
             }
-            /*case R.id.addEditButton:
+            case R.id.addFinalizeButton:
             {
-                mNameEt.setEnabled(true);
-                mPhonenumberEt.setEnabled(true);
-                mProfile.setEnabled(true);
-                mAddCommitButton.setEnabled(true);
-                mAddCommitButton.setVisibility(View.VISIBLE);
-                mCameraButton.setEnabled(true);
-                mEditButton.setEnabled(false);
-                mEditButton.setVisibility(View.GONE);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("soldOut", true);
+                intent.putExtra("id", id);
+
+                setResult(RESULT_FIRST_USER, intent);
+                finish();
                 break;
-            }*/
+            }
         }
     }
 

@@ -89,7 +89,7 @@ public class CTabFragment extends Fragment {
         j.delivery = bundle.getBoolean("delivery");
         j.desc = bundle.getString("desc");
         j.image = Uri.parse(bundle.getString("image"));
-        j.deviceID = Settings.Secure.ANDROID_ID;
+        j.deviceID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         try {
             InputStream is = getActivity().getContentResolver().openInputStream(j.image);
             Bitmap bm = BitmapFactory.decodeStream(is);
@@ -108,6 +108,45 @@ public class CTabFragment extends Fragment {
     public void addComment(String id, String jsonStr) {
 
         new AddCommentAsyncTask().execute(id, jsonStr);
+
+    }
+
+    public void finishDeal(String id) {
+        new SoldAsyncTask().execute(id);
+
+    }
+
+
+    class SoldAsyncTask extends AsyncTask<String, Void, Void> {
+        private String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/joongo/sold/";
+        public Void doInBackground(String... params){
+            HttpURLConnection conn = null;
+            String id = params[0];
+
+            try{
+                URL url = new URL(server_url + id);
+                conn = (HttpURLConnection) url.openConnection();
+                Log.d("SoldAsyncTask", "conn pass");
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                int responseCode = conn.getResponseCode();
+                Log.d("AddCommentAsyncTask", "Resp code" + responseCode);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally{
+                conn.disconnect();
+            }
+            return null;
+        }
+        public void onPostExecute(JoongoEntry j){
+            //((JoongoAdapter)mAdapter).addItem(j);
+            new PopulateAsyncTask().execute();
+        }
 
     }
 
@@ -144,8 +183,10 @@ public class CTabFragment extends Fragment {
             }
             return null;
         }
-
-
+        public void onPostExecute(JoongoEntry j){
+            //((JoongoAdapter)mAdapter).addItem(j);
+            new PopulateAsyncTask().execute();
+        }
 
     }
 
@@ -272,6 +313,8 @@ public class CTabFragment extends Fragment {
                     joongoEntry.soldOut = j.getBoolean("isSold");
                     joongoEntry.desc = j.getString("description");
                     joongoEntry.comments = j.getJSONArray("comments");
+                    joongoEntry.deviceID = j.getString("id");
+                    joongoEntry.id = j.getString("_id");
                     list.add(joongoEntry);
                 }
 
@@ -311,7 +354,6 @@ public class CTabFragment extends Fragment {
             public TextView mNegotiable;
             public TextView mDelivery;
             public TextView mDesc;
-
             public ViewHolder(View view){
                 super(view);
                 mSoldOut = (TextView) view.findViewById(R.id.joongoSoldOut);
@@ -321,6 +363,7 @@ public class CTabFragment extends Fragment {
                 mNegotiable = (TextView) view.findViewById(R.id.joongoNegotiable);
                 mDelivery = (TextView) view.findViewById(R.id.joongoTBable);
                 mDesc = (TextView) view.findViewById(R.id.joongoDesc);
+                mSoldOut = (TextView) view.findViewById(R.id.textView);
             }
         }
 
@@ -348,6 +391,7 @@ public class CTabFragment extends Fragment {
             holder.mDesc.setText(j.desc);
             holder.itemView.setTag(position);
             holder.itemView.setOnClickListener(this);
+            holder.mSoldOut.setBackgroundColor(getResources().getColor(j.soldOut?R.color.colorFont:R.color.colorPrimary));
         }
 
 
@@ -382,7 +426,9 @@ public class CTabFragment extends Fragment {
             //bundle.putString("image", j.image.toString());
             bundle.putBoolean("isComment", true);
             bundle.putString("id", j.id);
+            bundle.putString("deviceID", j.deviceID);
             newIntent.putExtra("data", bundle);
+
 
 
             getActivity().startActivityForResult(newIntent, MainActivity.ADD_NEW_JOONGO_COMMENT);
