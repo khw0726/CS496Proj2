@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,7 +77,8 @@ public class AddJoongoActivity extends Activity {
         mCommentView = (TextView) findViewById(R.id.commentView_addJoongo);
         mCommentAuthorEdit = (EditText)findViewById(R.id.commentAuthor_addJoongo);
         mCommentEdit = (EditText)findViewById(R.id.comment_addJoongo);
-
+        JSONArray comments;
+        String commentsStr = "";
         LinearLayout mButtons = (LinearLayout) findViewById(R.id.buttonsLayout_addJoongo);
         LinearLayout mCommentAdd = (LinearLayout) findViewById(R.id.addCommentLayout_addJoongo);
         Intent gotIntent = getIntent();
@@ -91,16 +93,29 @@ public class AddJoongoActivity extends Activity {
                 //mPhotoURI = Uri.parse(gotBundle.getString("image"));
                 id = gotBundle.getString("id");
                 isComment = gotBundle.getBoolean("isComment");
+                try {
+                    comments = new JSONArray(gotBundle.getString("comments"));
+                    for(int i =0; i<comments.length(); i++){
+                        JSONObject j = comments.getJSONObject(i);
+                        commentsStr += j.getString("author") + ": " + j.getString("content");
+                    }
+                    mCommentView.setText(commentsStr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 //setPic();
+
+
             }
         }
         mEditButton.setEnabled(false);
-        mEditButton.setVisibility(View.INVISIBLE);
+        mEditButton.setVisibility(View.GONE);
         if(isComment){
             mNameEt.setEnabled(false);
             mPriceEt.setEnabled(false);
             mPicture.setEnabled(false);
-            mButtons.setVisibility(View.INVISIBLE);
+            mButtons.setVisibility(View.GONE);
             mCameraButton.setEnabled(false);
             mDescEt.setEnabled(false);
 
@@ -216,7 +231,7 @@ public class AddJoongoActivity extends Activity {
                 try {
                     j.put("author", mCommentAuthorEdit.getEditableText().toString());
                     j.put("content", mCommentEdit.getEditableText().toString());
-                    intent.putExtra("commentPosition", id);
+                    intent.putExtra("id", id);
                     intent.putExtra("comment", j.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
