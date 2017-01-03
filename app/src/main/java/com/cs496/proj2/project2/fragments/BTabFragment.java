@@ -233,15 +233,16 @@ public class BTabFragment extends Fragment {
                 //wr.writeBytes("\r\n--" + boundary + "--\r\n");
                 Log.d("CS496", "Image sent");
                 wr.flush();
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line;
-                while((line = rd.readLine()) != null){
-                    Log.i("ResultFromHttp", line);
-                    JSONObject jsonObject = new JSONObject(line);
-                    id = jsonObject.getJSONObject("result").getString("_id");
-
-                }
+                int status = conn.getResponseCode();
+                Log.d("CS496", "Response "+status);
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//                String line;
+//                while((line = rd.readLine()) != null){
+//                    Log.i("ResultFromHttp", line);
+//                    JSONObject jsonObject = new JSONObject(line);
+//                    id = jsonObject.getJSONObject("result").getString("_id");
+//
+//                }
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
