@@ -13,13 +13,15 @@
         android:orientation="vertical"
         android:focusable="true"
         android:focusableInTouchMode="true">
+
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="244dp"
             android:layout_height="match_parent"
             android:maxLines="1"
             android:id="@+id/searchBox"
             android:hint="Search"
             />
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

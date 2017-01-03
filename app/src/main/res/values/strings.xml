@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project2</string>
+    <string name="app_name">중고세상</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="facebook_app_id">170898416724095</string>
