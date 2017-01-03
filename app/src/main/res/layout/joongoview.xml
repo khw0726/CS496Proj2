@@ -3,67 +3,110 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+
+    android:weightSum="1"
+    android:layout_margin="20dp">
 
     <android.support.v7.widget.CardView
         android:id = "@+id/joongoCard"
         app:cardCornerRadius="3dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/joongoSoldOut"
-            android:text="SOLD OUT"/>
+        android:layout_weight="0.03"
+        android:layout_height="match_parent"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="false"
+        android:padding="30dp">
+
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/joongoImage"/>
+                android:layout_width="257dp"
+                android:layout_height="339dp"
+                android:id="@+id/joongoImage"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true" />
+
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/joongoName"/>
+                    android:id="@+id/joongoSoldOut"
+                    android:text="SOLD OUT"
+                    android:layout_weight="1" />
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/joongoPrice"/>
+                    android:id="@+id/joongoName"
+                    android:textSize= "40dp"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="261dp"
+                    android:padding="30dp">
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="10dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/textView"
+                        android:background="@color/colorPrimary" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:textSize= "20dp"
+                            android:id="@+id/joongoPrice"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:id="@+id/joongoNegotiable"
+                            android:textSize= "20dp"
+                            android:text="Negotiable"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:id="@+id/joongoTBable"
+                            android:textSize= "20dp"
+                            android:text="Delivery"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/joongoDesc"
+                            android:textSize= "20dp"
+                            android:layout_weight="0.77" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/joongoNegotiable"
-                    android:layout_weight="1"
-                    android:text="Negotiable"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/joongoTBable"
-                    android:layout_weight="1"
-                    android:text="Delivery"/>
-            </LinearLayout>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/joongoDesc"/>
 
         </LinearLayout>
 
 
-
-     </android.support.v7.widget.CardView>
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>
