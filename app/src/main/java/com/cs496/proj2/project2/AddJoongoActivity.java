@@ -41,6 +41,7 @@ public class AddJoongoActivity extends Activity {
     private ToggleButton mNegoButton;
     private ToggleButton mTBButton;
     private EditText mDescEt;
+    private Bitmap bm = null;
     String mCurrentPhotoPath = null;
 
 
@@ -126,7 +127,7 @@ public class AddJoongoActivity extends Activity {
 
             //Log.i("cs496", bitmap.getWidth() + "," + bitmap.getHeight());
             mProfile.setImageBitmap(bitmap);
-
+            bm = bitmap;
 
 
 
@@ -145,6 +146,8 @@ public class AddJoongoActivity extends Activity {
                 j.negotiable = mNegoButton.isChecked();
                 j.delivery = mTBButton.isChecked();
                 j.desc = mDescEt.getText().toString();
+                j.soldOut = false;
+                j.image = bm;
 
 
 
