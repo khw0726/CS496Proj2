@@ -43,18 +43,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         Log.d("CS496Test", "onActivityResult");
         Log.d("CS496Test", resultCode + " " + requestCode);
-        if(requestCode == REQUEST_IMAGE_SEARCH && resultCode == RESULT_OK){
-            Log.d("CS496Test", "addData");
-            Fragment f = mSectionsPagerAdapter.fragments[1];
-            if(f != null){
+        Log.d("CS496Test", "1st user"+RESULT_FIRST_USER);
+        if(requestCode == REQUEST_IMAGE_SEARCH){
+            if(resultCode == RESULT_OK) {
+                Log.d("CS496Test", "addData");
+                Fragment f = mSectionsPagerAdapter.fragments[1];
+                if (f != null) {
 
-                ((BTabFragment) f).addData(data.getData());
+                    ((BTabFragment) f).addData(data.getData());
+                }
             }
-        } else if(requestCode == ADD_NEW_JOONGO && resultCode == RESULT_OK){
-            Log.d("CS496Test", "addData");
-            Fragment f = mSectionsPagerAdapter.fragments[2];
-            if(f != null){
-                ((CTabFragment) f).addData(data.getBundleExtra("data"));
+        } else if(requestCode == ADD_NEW_JOONGO){
+            if(resultCode == RESULT_OK) {
+                Log.d("CS496Test", "addData");
+                Fragment f = mSectionsPagerAdapter.fragments[2];
+                if (f != null) {
+                    ((CTabFragment) f).addData(data.getBundleExtra("data"));
+                }
             }
         } else if(requestCode == ADD_NEW_JOONGO_COMMENT){
             Log.d("CS496Test", "addComment");
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
                     ((CTabFragment) f).addComment(data.getStringExtra("id"), data.getStringExtra("comment"));
                 }
-            } else {//if(resultCode == RESULT_FIRST_USER){
+            } else if(resultCode == RESULT_FIRST_USER){
                 Fragment f = mSectionsPagerAdapter.fragments[2];
                 if (f != null) {
 

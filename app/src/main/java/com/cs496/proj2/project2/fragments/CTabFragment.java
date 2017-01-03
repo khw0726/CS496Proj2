@@ -100,6 +100,7 @@ public class CTabFragment extends Fragment {
         catch(Exception e){
             e.printStackTrace();
             j.thumbnail = null;
+            j.image = null;
         }
         new AddJoongoAsyncTask().execute(j);
         //((JoongoAdapter) mAdapter).addItem(j);
@@ -147,7 +148,8 @@ public class CTabFragment extends Fragment {
             }
             return null;
         }
-        public void onPostExecute(JoongoEntry j){
+
+        protected void onPostExecute(Void v) {
             //((JoongoAdapter)mAdapter).addItem(j);
             new PopulateAsyncTask().execute();
         }
@@ -187,7 +189,7 @@ public class CTabFragment extends Fragment {
             }
             return null;
         }
-        public void onPostExecute(JoongoEntry j){
+        protected void onPostExecute(Void v) {
             //((JoongoAdapter)mAdapter).addItem(j);
             new PopulateAsyncTask().execute();
         }
@@ -220,22 +222,28 @@ public class CTabFragment extends Fragment {
                 j.put("comments", "[]");
                 j.put("id", joongoEntry.deviceID);
                 Log.d("AddJoongoAsyncTask", "JSON create pass");
-                InputStream is = getActivity().getContentResolver().openInputStream(joongoEntry.image);
-                Bitmap bm = BitmapFactory.decodeStream(is);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                if(joongoEntry.image != null) {
+                    InputStream is = getActivity().getContentResolver().openInputStream(joongoEntry.image);
+                    Bitmap bm = BitmapFactory.decodeStream(is);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] image = baos.toByteArray();
-                String encodedImage = Base64.encodeToString(image, Base64.DEFAULT);
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] image = baos.toByteArray();
+                    String encodedImage = Base64.encodeToString(image, Base64.DEFAULT);
 
-                baos = new ByteArrayOutputStream();
-                joongoEntry.thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] thumb = baos.toByteArray();
-                String encodedThumb = Base64.encodeToString(thumb, Base64.DEFAULT);
-                j.put("thumbnail", encodedThumb);
-                j.put("image", encodedImage);
-                Log.d("CS469", encodedImage.substring(0, 10));
-                Log.d("CS469", encodedImage.substring(encodedImage.length() - 10));
+                    baos = new ByteArrayOutputStream();
+                    joongoEntry.thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] thumb = baos.toByteArray();
+                    String encodedThumb = Base64.encodeToString(thumb, Base64.DEFAULT);
+                    j.put("thumbnail", encodedThumb);
+                    j.put("image", encodedImage);
+
+                    Log.d("CS469", encodedImage.substring(0, 10));
+                    Log.d("CS469", encodedImage.substring(encodedImage.length() - 10));
+                } else {
+                    j.put("image", "");
+                    j.put("thumbnail", "");
+                }
                 Log.d("AddJoongoAsyncTask", "Thumb pass");
                 Log.d("CS496", "Image sent");
 
@@ -259,7 +267,7 @@ public class CTabFragment extends Fragment {
             return joongoEntry;
         }
 
-        public void onPostExecute(JoongoEntry j){
+        protected void onPostExecute(JoongoEntry j) {
             //((JoongoAdapter)mAdapter).addItem(j);
             new PopulateAsyncTask().execute();
         }
@@ -432,6 +440,7 @@ public class CTabFragment extends Fragment {
             bundle.putBoolean("isComment", true);
             bundle.putString("id", j.id);
             bundle.putString("deviceID", j.deviceID);
+            bundle.putParcelable("thumbnail", j.thumbnail);
             newIntent.putExtra("data", bundle);
 
 
