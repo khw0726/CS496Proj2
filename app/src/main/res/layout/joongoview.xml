@@ -38,13 +38,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/joongoSoldOut"
-                    android:text="SOLD OUT"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/joongoName"
                     android:textSize= "40dp"
                     android:textStyle="bold"
@@ -53,15 +46,16 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="261dp"
+                    android:layout_height="match_parent"
                     android:padding="30dp">
 
-                    <TextView
-                        android:text=""
+                    <View
                         android:layout_width="10dp"
                         android:layout_height="match_parent"
-                        android:id="@+id/textView"
-                        android:background="@color/colorPrimary" />
+                        android:id="@+id/Barcolor"
+                        android:visibility="visible"
+
+                         />
 
                     <LinearLayout
                         android:orientation="vertical"

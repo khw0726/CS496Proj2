@@ -130,6 +130,7 @@ public class ATabFragment extends Fragment {
 
                                                     }
                                                     new UploadAsyncTask().execute(facebook_contact);
+                                                    new PopulateAsyncTask().execute();
 
                                                     /*for(int j=0;j<namelist.size();j++){
                                                         Log.d("NAME", namelist.get(j));
@@ -183,7 +184,8 @@ public class ATabFragment extends Fragment {
         ArrayList<Contact> contactArrayList;
         new UploadAsyncTask().execute(json_contact);
         listView = (ListView) rootView.findViewById(R.id.list);
-        new PopulateAsyncTask().execute();
+        if (AccessToken.getCurrentAccessToken()  != null)
+            new PopulateAsyncTask().execute();
 
         return rootView;
     }

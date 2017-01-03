@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -347,7 +348,7 @@ public class CTabFragment extends Fragment {
         private ArrayList<JoongoEntry> mDataSet;
 
         public class ViewHolder extends RecyclerView.ViewHolder{
-            public TextView mSoldOut;
+            public View mSoldOut;
             public ImageView mImage;
             public TextView mName;
             public TextView mPrice;
@@ -356,14 +357,13 @@ public class CTabFragment extends Fragment {
             public TextView mDesc;
             public ViewHolder(View view){
                 super(view);
-                mSoldOut = (TextView) view.findViewById(R.id.joongoSoldOut);
                 mImage = (ImageView) view.findViewById(R.id.joongoImage);
                 mName = (TextView) view.findViewById(R.id.joongoName);
                 mPrice = (TextView) view.findViewById(R.id.joongoPrice);
                 mNegotiable = (TextView) view.findViewById(R.id.joongoNegotiable);
                 mDelivery = (TextView) view.findViewById(R.id.joongoTBable);
                 mDesc = (TextView) view.findViewById(R.id.joongoDesc);
-                mSoldOut = (TextView) view.findViewById(R.id.textView);
+                mSoldOut = view.findViewById(R.id.Barcolor);
             }
         }
 
@@ -382,7 +382,7 @@ public class CTabFragment extends Fragment {
 
         public void onBindViewHolder(ViewHolder holder, int position){
             JoongoEntry j = mDataSet.get(position);
-            holder.mSoldOut.setVisibility(j.soldOut?View.VISIBLE:View.GONE);
+           // holder.mSoldOut.setVisibility(j.soldOut?View.VISIBLE:View.GONE);
             holder.mNegotiable.setEnabled(j.negotiable);
             holder.mDelivery.setEnabled(j.delivery);
             holder.mImage.setImageBitmap(j.thumbnail);
@@ -391,7 +391,8 @@ public class CTabFragment extends Fragment {
             holder.mDesc.setText(j.desc);
             holder.itemView.setTag(position);
             holder.itemView.setOnClickListener(this);
-            holder.mSoldOut.setBackgroundColor(getResources().getColor(j.soldOut?R.color.colorFont:R.color.colorPrimary));
+           // holder.mSoldOut.setBackgroundColor(getResources().getColor(j.soldOut?R.color.colorFont:R.color.colorPrimary));
+           holder.mSoldOut.setBackgroundColor(ContextCompat.getColor(getContext(), j.soldOut?R.color.colorFont:R.color.colorPrimary));
         }
 
 
