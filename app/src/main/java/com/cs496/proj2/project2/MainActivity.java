@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_IMAGE_SEARCH = 8;
     public static final int ADD_NEW_JOONGO = 6;
+    public static final int ADD_NEW_JOONGO_COMMENT = 4;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -55,6 +56,15 @@ public class MainActivity extends AppCompatActivity {
             if(f != null){
                 ((CTabFragment) f).addData(data.getBundleExtra("data"));
             }
+        } else if(requestCode == ADD_NEW_JOONGO_COMMENT){
+            if(resultCode == RESULT_OK) {
+                Fragment f = mSectionsPagerAdapter.fragments[2];
+                if (f != null) {
+
+                    ((CTabFragment) f).addComment(data.getStringExtra("id"), data.getStringExtra("comment"));
+                }
+            }
+
         }
         ((ATabFragment)mSectionsPagerAdapter.fragments[0]).callbackManager.onActivityResult(requestCode, resultCode, data);
     }

@@ -254,7 +254,7 @@ public class ATabFragment extends Fragment {
         String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/contacts";
 
         @Override
-        protected Void doInBackground(JSONArray...param) {
+        protected Void doInBackground(JSONArray... param) {
             HttpURLConnection conn = null;
             String id = null;
             try {

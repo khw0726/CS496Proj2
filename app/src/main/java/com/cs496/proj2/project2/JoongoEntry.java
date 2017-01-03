@@ -20,5 +20,6 @@ public class JoongoEntry {
     public boolean negotiable;
     public boolean delivery;
     public String desc;
+    public String deviceID;
 
 }

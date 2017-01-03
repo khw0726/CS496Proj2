@@ -1,11 +1,13 @@
 package com.cs496.proj2.project2.fragments;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
+
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
@@ -19,7 +21,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cs496.proj2.project2.AddJoongoActivity;
 import com.cs496.proj2.project2.JoongoEntry;
+import com.cs496.proj2.project2.MainActivity;
 import com.cs496.proj2.project2.R;
 
 import org.json.JSONArray;
@@ -85,6 +89,7 @@ public class CTabFragment extends Fragment {
         j.delivery = bundle.getBoolean("delivery");
         j.desc = bundle.getString("desc");
         j.image = Uri.parse(bundle.getString("image"));
+        j.deviceID = Settings.Secure.ANDROID_ID;
         try {
             InputStream is = getActivity().getContentResolver().openInputStream(j.image);
             Bitmap bm = BitmapFactory.decodeStream(is);
@@ -96,6 +101,50 @@ public class CTabFragment extends Fragment {
         }
         new AddJoongoAsyncTask().execute(j);
         //((JoongoAdapter) mAdapter).addItem(j);
+
+
+    }
+
+    public void addComment(String id, String jsonStr) {
+
+        new AddCommentAsyncTask().execute(id, jsonStr);
+
+    }
+
+    class AddCommentAsyncTask extends AsyncTask<String, Void, Void> {
+        private String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/joongo";
+        public Void doInBackground(String... params){
+            HttpURLConnection conn = null;
+            String id = params[0];
+            String comment = params[1];
+
+            try{
+                URL url = new URL(server_url + "/" + id);
+                conn = (HttpURLConnection) url.openConnection();
+                Log.d("AddJoongoAsyncTask", "conn pass");
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+                wr.write(comment);
+                Log.d("AddJoongoAsyncTask", "write pass");
+;
+                wr.flush();
+                int responseCode = conn.getResponseCode();
+                Log.d("AddJoonggoAsyncTask", "Resp code" + responseCode);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally{
+                conn.disconnect();
+            }
+            return null;
+        }
+
 
 
     }
@@ -124,6 +173,7 @@ public class CTabFragment extends Fragment {
                 j.put("isSold", joongoEntry.soldOut);
                 j.put("description", joongoEntry.desc);
                 j.put("comments", "[]");
+                j.put("id", joongoEntry.deviceID);
                 Log.d("AddJoongoAsyncTask", "JSON create pass");
                 InputStream is = getActivity().getContentResolver().openInputStream(joongoEntry.image);
                 Bitmap bm = BitmapFactory.decodeStream(is);
@@ -202,19 +252,19 @@ public class CTabFragment extends Fragment {
                     joongoEntry.id = j.getString("_id");
                     byte[] thumb = Base64.decode(j.getString("thumbnail"), Base64.DEFAULT);
                     joongoEntry.thumbnail = BitmapFactory.decodeByteArray(thumb, 0, thumb.length);
-
-                    /*byte[] image = Base64.decode(j.getString("image"), Base64.DEFAULT);
-
-                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                    String imageFileName = "JPEG_" + timeStamp + "_";
-
-                    File storageDir = getContext().getCacheDir();
-                    File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
-                    Bitmap bm = BitmapFactory.decodeByteArray(image, 0, image.length);
-                    bm.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(imageFile));
-
-                    joongoEntry.image = FileProvider.getUriForFile(getContext(), "com.cs496.proj2.project2", imageFile);
-                    bm.recycle();*/
+                    Log.d("JSONArray", j.toString());
+//                    byte[] image = Base64.decode(j.getString("image"), Base64.DEFAULT);
+//
+//                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//                    String imageFileName = "JPEG_" + timeStamp + "_";
+//
+//                    File storageDir = getContext().getCacheDir();
+//                    File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+//                    Bitmap bm = BitmapFactory.decodeByteArray(image, 0, image.length);
+//                    bm.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(imageFile));
+//
+//                    joongoEntry.image = FileProvider.getUriForFile(getContext(), "com.cs496.proj2.project2", imageFile);
+//                    bm.recycle();
                     joongoEntry.name = j.getString("name");
                     joongoEntry.negotiable = j.getBoolean("isNegotiable");
                     joongoEntry.price = j.getString("price");
@@ -248,72 +298,96 @@ public class CTabFragment extends Fragment {
 
         }
     }
-}
 
+    class JoongoAdapter extends RecyclerView.Adapter<JoongoAdapter.ViewHolder> implements View.OnClickListener{
+        private ArrayList<JoongoEntry> mDataSet;
 
+        public class ViewHolder extends RecyclerView.ViewHolder{
+            public TextView mSoldOut;
+            public ImageView mImage;
+            public TextView mName;
+            public TextView mPrice;
+            public TextView mNegotiable;
+            public TextView mDelivery;
+            public TextView mDesc;
 
-class JoongoAdapter extends RecyclerView.Adapter<JoongoAdapter.ViewHolder>{
-    private ArrayList<JoongoEntry> mDataSet;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView mSoldOut;
-        public ImageView mImage;
-        public TextView mName;
-        public TextView mPrice;
-        public TextView mNegotiable;
-        public TextView mDelivery;
-        public TextView mDesc;
-
-        public ViewHolder(View view){
-            super(view);
-            mSoldOut = (TextView) view.findViewById(R.id.joongoSoldOut);
-            mImage = (ImageView) view.findViewById(R.id.joongoImage);
-            mName = (TextView) view.findViewById(R.id.joongoName);
-            mPrice = (TextView) view.findViewById(R.id.joongoPrice);
-            mNegotiable = (TextView) view.findViewById(R.id.joongoNegotiable);
-            mDelivery = (TextView) view.findViewById(R.id.joongoTBable);
-            mDesc = (TextView) view.findViewById(R.id.joongoDesc);
+            public ViewHolder(View view){
+                super(view);
+                mSoldOut = (TextView) view.findViewById(R.id.joongoSoldOut);
+                mImage = (ImageView) view.findViewById(R.id.joongoImage);
+                mName = (TextView) view.findViewById(R.id.joongoName);
+                mPrice = (TextView) view.findViewById(R.id.joongoPrice);
+                mNegotiable = (TextView) view.findViewById(R.id.joongoNegotiable);
+                mDelivery = (TextView) view.findViewById(R.id.joongoTBable);
+                mDesc = (TextView) view.findViewById(R.id.joongoDesc);
+            }
         }
+
+        public JoongoAdapter(ArrayList<JoongoEntry> data){
+            mDataSet = data;
+        }
+
+        @Override
+        public JoongoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.joongoview, parent, false);
+
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
+        }
+
+
+        public void onBindViewHolder(ViewHolder holder, int position){
+            JoongoEntry j = mDataSet.get(position);
+            holder.mSoldOut.setVisibility(j.soldOut?View.VISIBLE:View.GONE);
+            holder.mNegotiable.setEnabled(j.negotiable);
+            holder.mDelivery.setEnabled(j.delivery);
+            holder.mImage.setImageBitmap(j.thumbnail);
+            holder.mName.setText(j.name);
+            holder.mPrice.setText(j.price);
+            holder.mDesc.setText(j.desc);
+            holder.itemView.setTag(position);
+            holder.itemView.setOnClickListener(this);
+        }
+
+
+//        public void addItem(JoongoEntry j){
+//            mDataSet.add(j);
+//            this.notifyItemInserted(mDataSet.size() - 1);
+//        }
+
+        public JoongoEntry getItem(int pos){
+            return mDataSet.get(pos);
+        }
+
+        public void setmDataSet(ArrayList<JoongoEntry> list){
+            mDataSet = list;
+            this.notifyDataSetChanged();
+        }
+
+        public int getItemCount(){
+            return mDataSet.size();
+        }
+
+        public void onClick(View v){
+            JoongoEntry j = this.mDataSet.get((Integer)v.getTag());
+            Intent newIntent = new Intent(getActivity().getApplicationContext(), AddJoongoActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("name", j.name);
+            bundle.putString("price", j.price);
+            bundle.putBoolean("negotiable", j.negotiable);
+            bundle.putBoolean("delivery", j.delivery);
+            bundle.putString("desc", j.desc);
+            //bundle.putString("image", j.image.toString());
+            bundle.putBoolean("isComment", true);
+            bundle.putString("commentPosition", j.id);
+            newIntent.putExtra("data", bundle);
+
+            getActivity().startActivityForResult(newIntent, MainActivity.ADD_NEW_JOONGO_COMMENT);
+        }
+
     }
-
-    public JoongoAdapter(ArrayList<JoongoEntry> data){
-        mDataSet = data;
-    }
-
-    @Override
-    public JoongoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.joongoview, parent, false);
-
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-
-    public void onBindViewHolder(ViewHolder holder, int position){
-        JoongoEntry j = mDataSet.get(position);
-        holder.mSoldOut.setVisibility(j.soldOut?View.VISIBLE:View.GONE);
-        holder.mNegotiable.setEnabled(j.negotiable);
-        holder.mDelivery.setEnabled(j.delivery);
-        holder.mImage.setImageBitmap(j.thumbnail);
-        holder.mName.setText(j.name);
-        holder.mPrice.setText(j.price);
-        holder.mDesc.setText(j.desc);
-    }
-
-
-    public void addItem(JoongoEntry j){
-        mDataSet.add(j);
-        this.notifyItemInserted(mDataSet.size() - 1);
-    }
-
-    public void setmDataSet(ArrayList<JoongoEntry> list){
-        mDataSet = list;
-        this.notifyDataSetChanged();
-    }
-
-    public int getItemCount(){
-        return mDataSet.size();
-    }
-
-
 }
+
+
+
+

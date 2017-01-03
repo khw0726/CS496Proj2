@@ -16,7 +16,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +36,9 @@ import java.util.Date;
 public class AddJoongoActivity extends Activity {
     private EditText mNameEt;
     private EditText mPriceEt;
-    private int modifyPosition = -1;
     private ImageView mPicture;
     private Uri mPhotoURI = null;
-    private boolean isModifying = false;
+    private boolean isComment = false;
     private ImageButton mCameraButton;
     private Button mAddCommitButton;
     private Button mCancelButton;
@@ -43,11 +47,17 @@ public class AddJoongoActivity extends Activity {
     private ToggleButton mTBButton;
     private EditText mDescEt;
     private Bitmap bm = null;
+    private TextView mCommentView;
+    private EditText mCommentAuthorEdit;
+    private EditText mCommentEdit;
+    private String id;
+
     String mCurrentPhotoPath = null;
 
 
     public static final int REQUEST_IMAGE_CAPTURE = 1;
     public static final int REQUEST_IMAGE_SEARCH = 2;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,43 +73,42 @@ public class AddJoongoActivity extends Activity {
         mTBButton = (ToggleButton) findViewById(R.id.TBable_addJoongo);
         mDescEt = (EditText) findViewById(R.id.desc_addJoongo);
         mPicture = (ImageView) findViewById(R.id.pic_addJoongo);
-        /*
+        mCommentView = (TextView) findViewById(R.id.commentView_addJoongo);
+        mCommentAuthorEdit = (EditText)findViewById(R.id.commentAuthor_addJoongo);
+        mCommentEdit = (EditText)findViewById(R.id.comment_addJoongo);
+
+        LinearLayout mButtons = (LinearLayout) findViewById(R.id.buttonsLayout_addJoongo);
+        LinearLayout mCommentAdd = (LinearLayout) findViewById(R.id.addCommentLayout_addJoongo);
         Intent gotIntent = getIntent();
         if (gotIntent != null) {
             Bundle gotBundle = gotIntent.getBundleExtra("data");
             if (gotBundle != null) {
                 mNameEt.setText(gotBundle.getString("name"));
-                mPhonenumberEt.setText(gotBundle.getString("phoneNumber"));
-                modifyPosition = gotBundle.getInt("position");
-                isModifying = gotBundle.getBoolean("isModifying");
-                if (gotBundle.getString("photoDir") != null && !gotBundle.getString("photoDir").equals("")) {
-                    //mCurrentPhotoPath = gotBundle.getString("photoDir");
-                    mPhotoURI = Uri.parse(gotBundle.getString("photoDir"));
-                    //Log.i("cs496: ocCreate", mCurrentPhotoPath);
-                }
-
+                mPriceEt.setText(gotBundle.getString("price"));
+                mTBButton.setChecked(gotBundle.getBoolean("delivery"));
+                mNegoButton.setChecked(gotBundle.getBoolean("negotiable"));
+                mDescEt.setText(gotBundle.getString("desc"));
+                //mPhotoURI = Uri.parse(gotBundle.getString("image"));
+                id = gotBundle.getString("id");
+                isComment = gotBundle.getBoolean("isComment");
+                //setPic();
             }
         }
-
-        mProfile = (ImageView) findViewById(R.id.pic_add);
-        if (mPhotoURI == null) {//(mCurrentPhotoPath == null) {
-            mProfile.setImageResource(R.drawable.ic_face_black_48dp);
-        } else {
-            setPic();
-        }
-        if(isModifying){
+        mEditButton.setEnabled(false);
+        mEditButton.setVisibility(View.INVISIBLE);
+        if(isComment){
             mNameEt.setEnabled(false);
-            mPhonenumberEt.setEnabled(false);
-            mProfile.setEnabled(false);
-            mAddCommitButton.setEnabled(false);
-            mAddCommitButton.setVisibility(View.GONE);
+            mPriceEt.setEnabled(false);
+            mPicture.setEnabled(false);
+            mButtons.setVisibility(View.INVISIBLE);
             mCameraButton.setEnabled(false);
+            mDescEt.setEnabled(false);
 
-        } else*/
-        //{
-            mEditButton.setEnabled(false);
-            mEditButton.setVisibility(View.GONE);
-        //}
+        } else
+        {
+            mCommentView.setVisibility(View.GONE);
+            mCommentAdd.setVisibility(View.GONE);
+        }
 
     }
 
@@ -185,13 +194,8 @@ public class AddJoongoActivity extends Activity {
                     if (photoFile != null) {
                         mPhotoURI = FileProvider.getUriForFile(this, "com.cs496.proj2.project2", photoFile);
                         Log.i("cs496", mPhotoURI.toString());
-                        /*newIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
-                        newIntent.putExtra("crop", "true");
-                        newIntent.putExtra("outputX", 150);
-                        newIntent.putExtra("outputY", 150);
-                        newIntent.putExtra("aspectX", 1);
-                        newIntent.putExtra("aspectY", 1);
-                        newIntent.putExtra("scale", true);*/
+                        newIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
+
                         startActivityForResult(newIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
@@ -203,6 +207,23 @@ public class AddJoongoActivity extends Activity {
                 if (newIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(newIntent, REQUEST_IMAGE_SEARCH);
                 }
+                break;
+            }
+            case R.id.addComment_addJoongo:
+            {
+                Intent intent = new Intent(this, MainActivity.class);
+                JSONObject j = new JSONObject();
+                try {
+                    j.put("author", mCommentAuthorEdit.getEditableText().toString());
+                    j.put("content", mCommentEdit.getEditableText().toString());
+                    intent.putExtra("commentPosition", id);
+                    intent.putExtra("comment", j.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                setResult(RESULT_OK, intent);
+                finish();
                 break;
             }
             /*case R.id.addEditButton:
