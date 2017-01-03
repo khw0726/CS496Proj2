@@ -85,6 +85,7 @@ public class CTabFragment extends Fragment {
         JoongoEntry j = new JoongoEntry();
         j.name = bundle.getString("name");
         j.price = bundle.getString("price");
+        j.soldOut = false;
         j.thumbnail = (Bitmap) bundle.getParcelable("thumbnail");
         j.negotiable = bundle.getBoolean("negotiable");
         j.delivery = bundle.getBoolean("delivery");
@@ -126,14 +127,16 @@ public class CTabFragment extends Fragment {
 
             try{
                 URL url = new URL(server_url + id);
+                Log.d("SoldAsyncTask", server_url + id);
                 conn = (HttpURLConnection) url.openConnection();
                 Log.d("SoldAsyncTask", "conn pass");
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
+                //conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                //conn.setDoOutput(true);
+                //conn.setDoInput(true);
                 int responseCode = conn.getResponseCode();
-                Log.d("AddCommentAsyncTask", "Resp code" + responseCode);
+
+                Log.d("SoldAsyncTask", "Resp code" + responseCode);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -357,6 +360,7 @@ public class CTabFragment extends Fragment {
             public TextView mDesc;
             public ViewHolder(View view){
                 super(view);
+                //mSoldOut = (TextView) view.findViewById(R.id.joongoSoldOut);
                 mImage = (ImageView) view.findViewById(R.id.joongoImage);
                 mName = (TextView) view.findViewById(R.id.joongoName);
                 mPrice = (TextView) view.findViewById(R.id.joongoPrice);
