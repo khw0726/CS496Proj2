@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+
 
 /**
  * Created by q on 2017-01-03.
@@ -21,5 +23,6 @@ public class JoongoEntry {
     public boolean delivery;
     public String desc;
     public String deviceID;
+    public JSONArray comments;
 
 }

@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 ((CTabFragment) f).addData(data.getBundleExtra("data"));
             }
         } else if(requestCode == ADD_NEW_JOONGO_COMMENT){
+            Log.d("CS496Test", "addComment");
             if(resultCode == RESULT_OK) {
                 Fragment f = mSectionsPagerAdapter.fragments[2];
                 if (f != null) {

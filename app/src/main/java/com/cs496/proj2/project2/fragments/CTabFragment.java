@@ -133,7 +133,7 @@ public class CTabFragment extends Fragment {
 ;
                 wr.flush();
                 int responseCode = conn.getResponseCode();
-                Log.d("AddJoonggoAsyncTask", "Resp code" + responseCode);
+                Log.d("AddCommentAsyncTask", "Resp code" + responseCode);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -200,7 +200,7 @@ public class CTabFragment extends Fragment {
                 Log.d("AddJoongoAsyncTask", j.toString());
                 wr.flush();
                 int responseCode = conn.getResponseCode();
-                Log.d("AddJoonggoAsyncTask", "Resp code" + responseCode);
+                Log.d("AddJoongoAsyncTask", "Resp code" + responseCode);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -271,6 +271,7 @@ public class CTabFragment extends Fragment {
                     joongoEntry.delivery = j.getBoolean("isTaekBae");
                     joongoEntry.soldOut = j.getBoolean("isSold");
                     joongoEntry.desc = j.getString("description");
+                    joongoEntry.comments = j.getJSONArray("comments");
                     list.add(joongoEntry);
                 }
 
@@ -377,10 +378,12 @@ public class CTabFragment extends Fragment {
             bundle.putBoolean("negotiable", j.negotiable);
             bundle.putBoolean("delivery", j.delivery);
             bundle.putString("desc", j.desc);
+            bundle.putString("comments", j.comments.toString());
             //bundle.putString("image", j.image.toString());
             bundle.putBoolean("isComment", true);
-            bundle.putString("commentPosition", j.id);
+            bundle.putString("id", j.id);
             newIntent.putExtra("data", bundle);
+
 
             getActivity().startActivityForResult(newIntent, MainActivity.ADD_NEW_JOONGO_COMMENT);
         }
