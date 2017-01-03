@@ -382,6 +382,7 @@ public class ATabFragment extends Fragment {
             super.onPostExecute(result);
                 ContactAdapter m_adapter = new ContactAdapter(getActivity(), R.layout.contact_item, result);
                 listView.setAdapter(m_adapter);
+                m_adapter.notifyDataSetChanged();
             }
         }
     }
