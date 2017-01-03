@@ -105,7 +105,8 @@ public class AddJoongoActivity extends Activity {
                         LinearLayout l = new LinearLayout(getApplicationContext());
                         TextView textView = new TextView(getApplicationContext());
                         textView.setText(commentsStr);
-                        textView.setTextColor(getResources().getColor(R.color.colorFont));
+                        textView.setTextColor(getResources().getColor(R.color.colorBlack));
+                        textView.setTextSize(20);
                         textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow, 0, 0, 0);
                         l.addView(textView);
                         mCommentsLayout.addView(l);

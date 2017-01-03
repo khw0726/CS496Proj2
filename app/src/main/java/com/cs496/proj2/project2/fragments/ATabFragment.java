@@ -83,13 +83,7 @@ public class ATabFragment extends Fragment {
 
         //super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-
-
-
-
         View rootView = inflater.inflate(R.layout.fragment_a, container, false);
-
-
         callbackManager = CallbackManager.Factory.create();
 
         LoginButton loginButton = (LoginButton)rootView.findViewById(R.id.login_button);
