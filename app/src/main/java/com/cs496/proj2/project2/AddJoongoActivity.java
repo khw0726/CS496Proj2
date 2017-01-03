@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +32,7 @@ public class AddJoongoActivity extends Activity {
     private EditText mNameEt;
     private EditText mPriceEt;
     private int modifyPosition = -1;
-    private ImageView mProfile;
+    private ImageView mPicture;
     private Uri mPhotoURI = null;
     private boolean isModifying = false;
     private ImageButton mCameraButton;
@@ -54,13 +55,14 @@ public class AddJoongoActivity extends Activity {
 
         mNameEt = (EditText) findViewById(R.id.name_addJoongo);
         mPriceEt = (EditText) findViewById(R.id.price_addJoongo);
-        mCameraButton = (ImageButton) findViewById(R.id.newPic_addjoongo);
+        mCameraButton = (ImageButton) findViewById(R.id.newPic_addJoongo);
         mCancelButton = (Button) findViewById(R.id.addCancelButton);
         mAddCommitButton = (Button) findViewById(R.id.addCommitButton);
         mEditButton = (Button) findViewById(R.id.addEditButton);
         mNegoButton = (ToggleButton) findViewById(R.id.negotiable_addJoongo);
         mTBButton = (ToggleButton) findViewById(R.id.TBable_addJoongo);
         mDescEt = (EditText) findViewById(R.id.desc_addJoongo);
+        mPicture = (ImageView) findViewById(R.id.pic_addJoongo);
         /*
         Intent gotIntent = getIntent();
         if (gotIntent != null) {
@@ -106,7 +108,7 @@ public class AddJoongoActivity extends Activity {
         int targetW = 150; //mProfile.getWidth();
         int targetH = 150; //mProfile.getHeight();
         try {
-
+            Log.d("SetPic", "setPic");
             InputStream is = this.getContentResolver().openInputStream(mPhotoURI);
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             bmOptions.inJustDecodeBounds = true;
@@ -126,7 +128,7 @@ public class AddJoongoActivity extends Activity {
             Bitmap bitmap = BitmapFactory.decodeStream(is, null, bmOptions);
 
             //Log.i("cs496", bitmap.getWidth() + "," + bitmap.getHeight());
-            mProfile.setImageBitmap(bitmap);
+            mPicture.setImageBitmap(bitmap);
             bm = bitmap;
 
 
@@ -140,21 +142,26 @@ public class AddJoongoActivity extends Activity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addCommitButton: {
-                JoongoEntry j = new JoongoEntry();
-                j.name = mNameEt.getText().toString();
-                j.price = mPriceEt.getText().toString();
-                j.negotiable = mNegoButton.isChecked();
-                j.delivery = mTBButton.isChecked();
-                j.desc = mDescEt.getText().toString();
-                j.soldOut = false;
-                j.image = bm;
-
-
-
+                Bundle bundle = new Bundle();
+                bundle.putString("name", mNameEt.getText().toString());
+                bundle.putString("price", mPriceEt.getText().toString());
+                bundle.putBoolean("negotiable", mNegoButton.isChecked());
+                bundle.putBoolean("delivery", mTBButton.isChecked());
+                bundle.putString("desc", mDescEt.getText().toString());
+                if(mPhotoURI == null){
+                    bundle.putString("image", "");
+                } else {
+                    bundle.putString("image", mPhotoURI.toString());
+                }
+                Log.d("AddJoongo", "Till here");
+                //bundle.putParcelable("thumbnail", ThumbnailUtils.extractThumbnail(bm, 500, 500));
+                Log.d("AddJoongo", "Thumb?");
                 Intent newIntent = new Intent(this, MainActivity.class);
-                newIntent.putExtra("data", j);
-                Log.i("cs496", "onClick");
+                newIntent.putExtra("data", bundle);
+                Log.d("AddJoongo", "Intent creation fail T.T");
+
                 setResult(RESULT_OK, newIntent);
+                Log.i("cs496", "onClick");
                 finish();
                 break;
             }
@@ -162,8 +169,11 @@ public class AddJoongoActivity extends Activity {
                 finish();
                 break;
             }
-            case R.id.pic_addJoongo: {
+            case R.id.newPic_addJoongo: {
                 Intent newIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                /*newIntent.putExtra("outputFormat",
+                        Bitmap.CompressFormat.JPEG.toString());*/
                 if (newIntent.resolveActivity(getPackageManager()) != null) {
                     File photoFile = null;
                     try {
@@ -173,15 +183,21 @@ public class AddJoongoActivity extends Activity {
                     }
 
                     if (photoFile != null) {
-                        mPhotoURI = FileProvider.getUriForFile(this, "com.group2.team.project1", photoFile);
+                        mPhotoURI = FileProvider.getUriForFile(this, "com.cs496.proj2.project2", photoFile);
                         Log.i("cs496", mPhotoURI.toString());
-                        newIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
+                        /*newIntent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoURI);
+                        newIntent.putExtra("crop", "true");
+                        newIntent.putExtra("outputX", 150);
+                        newIntent.putExtra("outputY", 150);
+                        newIntent.putExtra("aspectX", 1);
+                        newIntent.putExtra("aspectY", 1);
+                        newIntent.putExtra("scale", true);*/
                         startActivityForResult(newIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
                 break;
             }
-            case R.id.newPic_addjoongo: {
+            case R.id.pic_addJoongo: {
                 Intent newIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 newIntent.setType("image/*");
                 if (newIntent.resolveActivity(getPackageManager()) != null) {

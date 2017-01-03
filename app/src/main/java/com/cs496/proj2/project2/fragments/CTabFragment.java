@@ -1,10 +1,18 @@
 package com.cs496.proj2.project2.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +22,26 @@ import android.widget.TextView;
 import com.cs496.proj2.project2.JoongoEntry;
 import com.cs496.proj2.project2.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by q on 2016-12-30.
@@ -44,15 +71,186 @@ public class CTabFragment extends Fragment {
         mAdapter = new JoongoAdapter(new ArrayList<JoongoEntry>());
         mRecyclerView.setAdapter(mAdapter);
 
+
+        new PopulateAsyncTask().execute();
         return rootView;
     }
 
+    public void addData(Bundle bundle){
+        JoongoEntry j = new JoongoEntry();
+        j.name = bundle.getString("name");
+        j.price = bundle.getString("price");
+        j.thumbnail = (Bitmap) bundle.getParcelable("thumbnail");
+        j.negotiable = bundle.getBoolean("negotiable");
+        j.delivery = bundle.getBoolean("delivery");
+        j.desc = bundle.getString("desc");
+        j.image = Uri.parse(bundle.getString("image"));
+        try {
+            InputStream is = getActivity().getContentResolver().openInputStream(j.image);
+            Bitmap bm = BitmapFactory.decodeStream(is);
+            j.thumbnail = ThumbnailUtils.extractThumbnail(bm, 300, 300);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            j.thumbnail = null;
+        }
+        new AddJoongoAsyncTask().execute(j);
+        //((JoongoAdapter) mAdapter).addItem(j);
 
+
+    }
+
+    class AddJoongoAsyncTask extends AsyncTask<JoongoEntry, Void, JoongoEntry> {
+        private String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/joongo";
+        public JoongoEntry doInBackground(JoongoEntry... joongoEntries){
+            HttpURLConnection conn = null;
+            JoongoEntry joongoEntry = joongoEntries[0];
+
+            try{
+                URL url = new URL(server_url);
+                conn = (HttpURLConnection) url.openConnection();
+                Log.d("AddJoongoAsyncTask", "conn pass");
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject j = new JSONObject();
+
+                j.put("name", joongoEntry.name);
+                j.put("price", joongoEntry.price);
+                j.put("isNegotiable", joongoEntry.negotiable);
+                j.put("isTaekBae", joongoEntry.delivery);
+                j.put("isSold", joongoEntry.soldOut);
+                j.put("description", joongoEntry.desc);
+                j.put("comments", "[]");
+                Log.d("AddJoongoAsyncTask", "JSON create pass");
+                InputStream is = getActivity().getContentResolver().openInputStream(joongoEntry.image);
+                Bitmap bm = BitmapFactory.decodeStream(is);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] image = baos.toByteArray();
+                String encodedImage = Base64.encodeToString(image, Base64.DEFAULT);
+
+                baos = new ByteArrayOutputStream();
+                joongoEntry.thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] thumb = baos.toByteArray();
+                String encodedThumb = Base64.encodeToString(thumb, Base64.DEFAULT);
+                j.put("thumbnail", encodedThumb);
+                j.put("image", encodedImage);
+                Log.d("CS469", encodedImage.substring(0, 10));
+                Log.d("CS469", encodedImage.substring(encodedImage.length() - 10));
+                Log.d("AddJoongoAsyncTask", "Thumb pass");
+                Log.d("CS496", "Image sent");
+
+                BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+                wr.write(j.toString());
+                Log.d("AddJoongoAsyncTask", "write pass");
+                Log.d("AddJoongoAsyncTask", j.toString());
+                wr.flush();
+                int responseCode = conn.getResponseCode();
+                Log.d("AddJoonggoAsyncTask", "Resp code" + responseCode);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            finally{
+                conn.disconnect();
+            }
+            return joongoEntry;
+        }
+
+        public void onPostExecute(JoongoEntry j){
+            //((JoongoAdapter)mAdapter).addItem(j);
+            new PopulateAsyncTask().execute();
+        }
+
+    }
+
+    class PopulateAsyncTask extends AsyncTask<Void, Void, ArrayList<JoongoEntry>>{
+        String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/joongo";
+        @Override
+        protected ArrayList<JoongoEntry> doInBackground(Void... voids){
+            HttpURLConnection conn = null;
+
+            ArrayList<JoongoEntry> list = new ArrayList<>();
+
+            try{
+                URL url = new URL(server_url);
+                conn = (HttpURLConnection) url.openConnection();
+
+                conn.setDoInput(true);
+
+                conn.setRequestProperty("Accept","Application/json");
+
+                int responseCode = conn.getResponseCode();
+                Log.d("CS496", "Response Code: " + responseCode);
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String line = rd.readLine();
+
+                JSONArray jsonArray = new JSONArray(line);
+
+                for(int i = 0; i< jsonArray.length(); i++){
+                    JSONObject j = jsonArray.getJSONObject(i);
+                    JoongoEntry joongoEntry = new JoongoEntry();
+                    joongoEntry.id = j.getString("_id");
+                    byte[] thumb = Base64.decode(j.getString("thumbnail"), Base64.DEFAULT);
+                    joongoEntry.thumbnail = BitmapFactory.decodeByteArray(thumb, 0, thumb.length);
+
+                    /*byte[] image = Base64.decode(j.getString("image"), Base64.DEFAULT);
+
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                    String imageFileName = "JPEG_" + timeStamp + "_";
+
+                    File storageDir = getContext().getCacheDir();
+                    File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+                    Bitmap bm = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(imageFile));
+
+                    joongoEntry.image = FileProvider.getUriForFile(getContext(), "com.cs496.proj2.project2", imageFile);
+                    bm.recycle();*/
+                    joongoEntry.name = j.getString("name");
+                    joongoEntry.negotiable = j.getBoolean("isNegotiable");
+                    joongoEntry.price = j.getString("price");
+                    joongoEntry.delivery = j.getBoolean("isTaekBae");
+                    joongoEntry.soldOut = j.getBoolean("isSold");
+                    joongoEntry.desc = j.getString("description");
+                    list.add(joongoEntry);
+                }
+
+
+            } catch (MalformedURLException e){
+                Log.d("BAD URL", server_url);
+                e.printStackTrace();
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+
+            finally{
+                conn.disconnect();
+                return list;
+            }
+        }
+
+        protected void onPostExecute(ArrayList<JoongoEntry> result){
+            super.onPostExecute(result);
+
+            ((JoongoAdapter)mAdapter).setmDataSet(result);
+
+        }
+    }
 }
 
-/*class AddJoongoAsyncTask extends AsyncTask<JoongoEntry, Void, ArrayList<JoongoEntry>> {
 
-}*/
 
 class JoongoAdapter extends RecyclerView.Adapter<JoongoAdapter.ViewHolder>{
     private ArrayList<JoongoEntry> mDataSet;
@@ -90,15 +288,27 @@ class JoongoAdapter extends RecyclerView.Adapter<JoongoAdapter.ViewHolder>{
         return vh;
     }
 
+
     public void onBindViewHolder(ViewHolder holder, int position){
         JoongoEntry j = mDataSet.get(position);
         holder.mSoldOut.setVisibility(j.soldOut?View.VISIBLE:View.GONE);
-        holder.mNegotiable.setEnabled(j.negotiable?true:false);
-        holder.mDelivery.setEnabled(j.delivery?true:false);
-        holder.mImage.setImageBitmap(j.image);
+        holder.mNegotiable.setEnabled(j.negotiable);
+        holder.mDelivery.setEnabled(j.delivery);
+        holder.mImage.setImageBitmap(j.thumbnail);
         holder.mName.setText(j.name);
         holder.mPrice.setText(j.price);
         holder.mDesc.setText(j.desc);
+    }
+
+
+    public void addItem(JoongoEntry j){
+        mDataSet.add(j);
+        this.notifyItemInserted(mDataSet.size() - 1);
+    }
+
+    public void setmDataSet(ArrayList<JoongoEntry> list){
+        mDataSet = list;
+        this.notifyDataSetChanged();
     }
 
     public int getItemCount(){

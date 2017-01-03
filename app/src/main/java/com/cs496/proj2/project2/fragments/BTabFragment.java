@@ -36,6 +36,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import android.net.Uri;
@@ -178,12 +179,12 @@ public class BTabFragment extends Fragment {
                 Log.d("Connection", conn.toString());
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
-                //conn.setRequestProperty("Content-Type",  "application/json");
-                conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                conn.setRequestProperty("Content-Type",  "application/json");
+                //conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                 //Log.d("Props", conn.getHeaderField("Content-Type"));
                 conn.setRequestMethod("POST");
                 Uri photoURI = param[0];
-                String filename = photoURI.getLastPathSegment();
+                //String filename = photoURI.getLastPathSegment();
                 InputStream is = getActivity().getContentResolver().openInputStream(photoURI);
                 Bitmap bm = BitmapFactory.decodeStream(is);
                 Bitmap thumb = ThumbnailUtils.extractThumbnail(bm, 500, 500);
@@ -193,8 +194,8 @@ public class BTabFragment extends Fragment {
                 String encodedThumb = Base64.encodeToString(thumbs, Base64.DEFAULT);
                 Log.d("Thumb", encodedThumb);
 
-                DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-                /*baos = new ByteArrayOutputStream();
+                //DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+                baos = new ByteArrayOutputStream();
                 bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] image = baos.toByteArray();
                 String encodedImage = Base64.encodeToString(image, Base64.DEFAULT);
@@ -203,44 +204,45 @@ public class BTabFragment extends Fragment {
                 j.put("image", encodedImage);
                 Log.d("CS496", "Image sent");
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                wr.write(j.toString());*/
-                wr.writeBytes("\r\n--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"thumbnail\"\r\n\r\n" + encodedThumb);
-                Log.d("CS496", "Thumb sent");
-                wr.writeBytes("\r\n--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"pic\"; " +
-                        "filename=\""+ filename.split(":")[1] +"\"\r\n");
-
-                wr.writeBytes("Content-Type: image/jpeg\r\n\r\n"); //
-                is = getActivity().getContentResolver().openInputStream(photoURI);
-                int bytesAvailable = is.available();
-                int maxBufferSize = 1024;
-                int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                byte[] buffer = new byte[maxBufferSize];
-
-                int bytesRead = is.read(buffer, 0, bufferSize);
-                while(bytesRead > 0){
-                    DataOutputStream dataWrite = new DataOutputStream(conn.getOutputStream());
-                    dataWrite.write(buffer, 0, bufferSize);
-                    Log.d("UploadAsyncTask", "uploaded " + bufferSize);
-                    bytesAvailable = is.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = is.read(buffer, 0, bufferSize);
-
-                }
+                wr.write(j.toString());
+//                wr.writeBytes("\r\n--" + boundary + "\r\n");
+//                wr.writeBytes("Content-Disposition: form-data; name=\"thumbnail\"\r\n\r\n" + encodedThumb);
+//                Log.d("CS496", "Thumb sent");
+//                wr.writeBytes("\r\n--" + boundary + "\r\n");
+//                wr.writeBytes("Content-Disposition: form-data; name=\"pic\"; " +
+//                        "filename=\""+ filename.split(":")[1] +"\"\r\n");
+//
+//                wr.writeBytes("Content-Type: image/jpeg\r\n\r\n"); //
+//                is = getActivity().getContentResolver().openInputStream(photoURI);
+//                int bytesAvailable = is.available();
+//                int maxBufferSize = 1024;
+//                int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                byte[] buffer = new byte[maxBufferSize];
+//
+//                int bytesRead = is.read(buffer, 0, bufferSize);
+//                while(bytesRead > 0){
+//                    DataOutputStream dataWrite = new DataOutputStream(conn.getOutputStream());
+//                    dataWrite.write(buffer, 0, bufferSize);
+//                    Log.d("UploadAsyncTask", "uploaded " + bufferSize);
+//                    bytesAvailable = is.available();
+//                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+//                    bytesRead = is.read(buffer, 0, bufferSize);
+//
+//                }
                 is.close();
-                wr.writeBytes("\r\n--" + boundary + "--\r\n");
+                //wr.writeBytes("\r\n--" + boundary + "--\r\n");
                 Log.d("CS496", "Image sent");
                 wr.flush();
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line;
-                while((line = rd.readLine()) != null){
-                    Log.i("ResultFromHttp", line);
-                    JSONObject jsonObject = new JSONObject(line);
-                    id = jsonObject.getJSONObject("result").getString("_id");
-
-                }
+                int status = conn.getResponseCode();
+                Log.d("CS496", "Response "+status);
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//                String line;
+//                while((line = rd.readLine()) != null){
+//                    Log.i("ResultFromHttp", line);
+//                    JSONObject jsonObject = new JSONObject(line);
+//                    id = jsonObject.getJSONObject("result").getString("_id");
+//
+//                }
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
