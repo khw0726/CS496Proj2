@@ -6,11 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.content.FileProvider;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,9 +27,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -97,6 +104,8 @@ public class AddJoongoActivity extends Activity {
                 id = gotBundle.getString("id");
                 deviceID = gotBundle.getString("deviceID");
                 isComment = gotBundle.getBoolean("isComment");
+                Bitmap thumbnail = gotBundle.getParcelable("thumbnail");
+                mPicture.setImageBitmap(thumbnail);
                 try {
                     comments = new JSONArray(gotBundle.getString("comments"));
                     for(int i =0; i<comments.length(); i++){
@@ -135,6 +144,9 @@ public class AddJoongoActivity extends Activity {
             mButtons.setVisibility(View.GONE);
             mCameraButton.setEnabled(false);
             mDescEt.setEnabled(false);
+            new DownloadAsyncTask().execute(id);
+            mTBButton.setEnabled(false);
+            mNegoButton.setEnabled(false);
 
         } else
         {
@@ -292,5 +304,52 @@ public class AddJoongoActivity extends Activity {
         return image;
     }
 
+    private class DownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
+        String server_url = "http://ec2-52-79-161-158.ap-northeast-2.compute.amazonaws.com:3000/api/joongo";
+        protected Bitmap doInBackground(String... params){
+            HttpURLConnection conn = null;
+            String id = params[0];
+            Bitmap bitmap = null;
+            try{
+                URL url = new URL(server_url + "/" + id);
+                Log.d("Port:", "Port " + url.getPort());
+                Log.d("Down URL", url.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                //conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                //conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept","application/json");
+                int responseCode = conn.getResponseCode();
+                Log.d("response code", "" + responseCode);
+                //BufferedInputStream is = new BufferedInputStream(conn.getInputStream());
+                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String json = rd.readLine();
+                JSONObject j = new JSONObject(json);
+                String str = j.getString("image");
+
+                byte[] image = Base64.decode(str, Base64.DEFAULT);
+                bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                if (bitmap != null) {
+                    Log.d("Bitmap", "Not null");
+                }
+            } catch (MalformedURLException e){
+                Log.d("BAD URL", server_url + id);
+                e.printStackTrace();
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+            finally{
+                conn.disconnect();
+                return bitmap;
+            }
+        }
+
+        protected void onPostExecute(Bitmap result){
+            super.onPostExecute(result);
+
+            mPicture.setImageBitmap(result);
+        }
+    }
 
 }
